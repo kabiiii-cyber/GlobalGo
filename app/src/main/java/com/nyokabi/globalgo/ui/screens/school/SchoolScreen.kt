@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -85,6 +87,33 @@ fun SchoolScreen(navController: NavController) {
                         .height(300.dp),
                     contentScale = ContentScale.Crop
                 )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Account Selection Buttons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(
+                    16.dp,
+                    Alignment.CenterHorizontally
+                ), // Adds space between buttons
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { navController.navigate("home") },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Sets button color
+                ) {
+                    Text(text = "Home")
+                }
+
+                Button(
+                    onClick = { navController.navigate("student") },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Sets button color
+                ) {
+                    Text(text = "Student")
+                }
             }
         }
     }

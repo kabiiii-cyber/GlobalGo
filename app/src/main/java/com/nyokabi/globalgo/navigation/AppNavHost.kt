@@ -1,5 +1,6 @@
 package com.nyokabi.globalgo.navigation
 
+import StudentScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -10,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nyokabi.globalgo.data.UserDatabase
 import com.nyokabi.globalgo.repository.UserRepository
 import com.nyokabi.globalgo.ui.screens.about.AboutScreen
+
 import com.nyokabi.globalgo.ui.screens.auth.LoginScreen
 import com.nyokabi.globalgo.ui.screens.auth.RegisterScreen
 import com.nyokabi.globalgo.ui.screens.home.HomeScreen
@@ -51,8 +53,10 @@ fun AppNavHost(
         composable(ROUT_SCHOOL) {
            SchoolScreen(navController)
         }
+
         composable(ROUT_STUDENT) {
-           StudentScreen(navController)
+            val context = LocalContext.current
+            StudentScreen(navController, context)
         }
 
 
@@ -97,10 +101,7 @@ fun AppNavHost(
 
 }
 
-@Composable
-fun StudentScreen(x0: NavHostController) {
-    TODO("Not yet implemented")
-}
+
 
 @Composable
 fun AuthViewModel(x0: UserRepository) {

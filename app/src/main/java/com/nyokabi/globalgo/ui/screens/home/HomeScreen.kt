@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nyokabi.globalgo.R
+import com.nyokabi.globalgo.navigation.ROUT_HOME
 import com.nyokabi.globalgo.navigation.ROUT_STUDENT
 import com.nyokabi.globalgo.ui.theme.dblue
 import com.nyokabi.globalgo.ui.theme.newgrey
@@ -55,32 +57,26 @@ import com.nyokabi.globalgo.ui.theme.white
 
 @Composable
 fun HomeScreen(navController: NavController) {
+
     Column(
         modifier = Modifier.fillMaxSize().paint(
-            painter = painterResource(R.drawable.img_9),
-            contentScale = ContentScale.FillHeight,
-        )
+            painter = painterResource(R.drawable.img_18),
+            contentScale = ContentScale.FillHeight
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(800.dp)
-                    .padding(start = 40.dp, end = 40.dp, top = 40.dp),
-                shape = RoundedCornerShape(60.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 50.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+
+            
+
+
+
+
                     Text(
                         text = "Welcome to GlobalGo",
                         fontSize = 30.sp,
                         color = dblue,
                         fontStyle = FontStyle.Italic
+
                     )
 
                     Spacer(modifier = Modifier.height(50.dp))
@@ -116,7 +112,7 @@ fun HomeScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Button(
-                            onClick = { navController.navigate(ROUT_STUDENT) },
+                            onClick = { navController.navigate("student") },
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Sets button color
                         ) {
@@ -133,9 +129,9 @@ fun HomeScreen(navController: NavController) {
                     }
                 }
             }
-        }
-    }
-}
+
+
+
 
 
 

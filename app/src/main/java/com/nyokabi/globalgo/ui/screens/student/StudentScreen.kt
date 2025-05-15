@@ -1,33 +1,22 @@
-package com.nyokabi.globalgo.ui.screens.about
-
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.nyokabi.globalgo.R
-import com.nyokabi.globalgo.navigation.ROUT_START
 import com.nyokabi.globalgo.ui.theme.bluey
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -35,70 +24,113 @@ import java.io.IOException
 @Composable
 fun StudentScreen(navController: NavController, context: Context) {
     var admissionNumber by remember { mutableStateOf("") }
-    var fileUri by remember { mutableStateOf<Uri?>(null) }
-    var uploadStatus by remember { mutableStateOf<String?>(null) }
+    var message by remember { mutableStateOf<String?>(null) }
 
-    val filePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
-        fileUri = it
-        uploadStatus = null
-    }
-    Column(modifier = Modifier.padding(16.dp).fillMaxSize().paint(painter = painterResource(
-        R.drawable.img_14
-    ), contentScale = ContentScale.FillBounds),
-        horizontalAlignment = androidx.compose.ui.Alignment.Companion.CenterHorizontally,) {
-        Spacer(modifier = Modifier.height(20.dp))
-
-
-
-        BasicText("STUDENT CERTIFICATE")
-
-        Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .paint(
+                painter = painterResource(R.drawable.img_14),
+                contentScale = ContentScale.FillBounds
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
+        Text("STUDENT CERTIFICATE", style = MaterialTheme.typography.titleLarge)
 
         OutlinedTextField(
             value = admissionNumber,
             onValueChange = { admissionNumber = it.uppercase() },
             label = { Text("Admission Number") },
             placeholder = { Text("e.g. ADM1234") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(start = 30.dp, end = 30.dp,top= 50.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 32.dp)
         )
 
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(onClick = { downloadCertificate(context) },
-            colors = ButtonDefaults.buttonColors(bluey),
-
-
+        Button(
+            onClick = {
+                if (admissionNumber.isNotBlank()) {
+                    val file = saveCertificate(context, admissionNumber)
+                    openPdf(context, file)
+                    message = "Certificate saved ."
+                } else {
+                    message = "Enter admission number first."
+                }
+            },
+            colors = ButtonDefaults.buttonColors(bluey)
         ) {
-            Text("Download Certificate")
+            Text("Download ")
         }
 
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(50.dp))
+
+        // Account Selection Buttons
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(
+                16.dp,
+                Alignment.CenterHorizontally
+            ), // Adds space between buttons
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = { navController.navigate("home") },
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Sets button color
+            ) {
+                Text(text = "Home")
+            }
+
+            Button(
+                onClick = { navController.navigate("school") },
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue) // Sets button color
+            ) {
+                Text(text = "School")
+            }
+        }
 
 
+        message?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = it)
+        }
     }
 }
 
-fun downloadCertificate(context: Context) {
-    val fileName = "certificate.pdf"
+fun saveCertificate(context: Context, admissionNumber: String): File {
+    val fileName = "${admissionNumber}_certificate.pdf"
     val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
     val file = File(directory, fileName)
 
     try {
         FileOutputStream(file).use { output ->
-            output.write("Your Certificate Data Goes Here".toByteArray())
+            output.write("Certificate for $admissionNumber".toByteArray())
         }
-        println("Certificate saved: ${file.absolutePath}")
     } catch (e: IOException) {
         e.printStackTrace()
     }
+
+    return file
 }
 
-@Preview(showBackground = true)
-@Composable
-fun StudentScreenPreview() {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    StudentScreen(navController = rememberNavController(), context)
+fun openPdf(context: Context, file: File) {
+    try {
+        val uri: Uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 }
